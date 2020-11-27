@@ -1,4 +1,6 @@
+from itertools import count
 import math
+import itertools
 from sigfig import round
 
 def create_data_set():
@@ -39,12 +41,17 @@ while True:
         print("Enter an integer")
 
 mean_list = [] # Add all means to this number to perform a t-test
+variance_list = [] # Add all variances to this number to perform a t-test
+number = None
 for data_set in data_sets: # Do statistical analysis for each data set
+
+    number = len(data_set) - 1 # Create the number for statistical operations, subtract 1 because last in index is the name
+
     mean_sum = 0 
     for value in data_set[:-1]: # Add all the values to create the sum to calculate mean, remove last because last is the name
         mean_sum += value 
 
-    mean = round(mean_sum/(len(data_set) - 1), sigfigs=sig_figs) # Calculate the mean with significant figures, subtract because last element is name
+    mean = round(mean_sum/number, sigfigs=sig_figs) # Calculate the mean with significant figures
     mean_list.append(mean)
 
     minimum = data_set[0]
@@ -57,7 +64,7 @@ for data_set in data_sets: # Do statistical analysis for each data set
         if value > maximum:
             maximum = value
 
-    range = maximum-minimum # Calculate the range
+    stat_range = maximum-minimum # Calculate the range
 
     squared_values = [] 
     for value in data_set[:-1]: # Subtract each value by the mean and square the result, then add to list subtract because last element is name
@@ -68,7 +75,8 @@ for data_set in data_sets: # Do statistical analysis for each data set
     for value in squared_values: # Add all squared values to be used to calculate the variance and standard deviation
         squared_sum += value
 
-    variance = float(squared_sum/(len(data_set) - 2)) # Calculate the variance, subtract because last element is name, subtract another because formula is n-1
+    variance = float(squared_sum/(number - 1)) # Calculate the variance, subtract 1 because formula is n-1
+    variance_list.append(variance) # Add variance to variance list to later calculate t-test
     standard_deviation = math.sqrt(variance) # Calculate the standard deviation
 
     # Calculate all the SD ranges, L means lower boud, H means upper bound. 
@@ -81,11 +89,11 @@ for data_set in data_sets: # Do statistical analysis for each data set
 
     # Output all the values for a descriptive statistics table
     # The data_set[-1] is to access the name of the data set
-    output = f"""___________________________________
+    descriptive_stats = f"""___________________________________
 {data_set[-1]}:
 mean: {mean}
 
-range: {range}
+range: {stat_range}
     maximum: {maximum}
     minimum: {minimum}
 
@@ -95,8 +103,8 @@ standard deviation: {standard_deviation}
     2SD: {L2sd}-{H2sd}
     3SD: {L3sd}-{H3sd}
 
-Number: {len(data_set) -1} 
+Number: {number} 
 ___________________________________
     """
-    print(output)
+    print(descriptive_stats)
 
